@@ -1,7 +1,90 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6750" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6750" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="sxQ-Wu-kx1">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6735"/>
     </dependencies>
-    <scenes/>
+    <scenes>
+        <!--Home-->
+        <scene sceneID="WPh-bR-8wr">
+            <objects>
+                <viewController id="BIz-rv-y1c" customClass="FeedViewController" customModule="twitter" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="l1E-7K-1mf"/>
+                        <viewControllerLayoutGuide type="bottom" id="ha0-LF-uNP"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="5sk-la-yTo">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="74v-4k-TuQ" userLabel="Feed Table View">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="BIz-rv-y1c" id="b56-4t-TwP"/>
+                                    <outlet property="delegate" destination="BIz-rv-y1c" id="j1D-1S-25F"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="74v-4k-TuQ" firstAttribute="top" secondItem="5sk-la-yTo" secondAttribute="top" id="27i-5e-zaj"/>
+                            <constraint firstItem="74v-4k-TuQ" firstAttribute="leading" secondItem="5sk-la-yTo" secondAttribute="leading" id="JxP-X3-PRJ"/>
+                            <constraint firstItem="74v-4k-TuQ" firstAttribute="bottom" secondItem="ha0-LF-uNP" secondAttribute="top" id="NgL-fh-Lxw"/>
+                            <constraint firstAttribute="trailing" secondItem="74v-4k-TuQ" secondAttribute="trailing" id="WAV-zO-DtM"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Home" id="lGp-g9-Xzt">
+                        <barButtonItem key="leftBarButtonItem" title="Sign Out" id="Wfh-Eu-MBu"/>
+                        <barButtonItem key="rightBarButtonItem" title="New" id="bVD-dF-PI3"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="feedTableView" destination="74v-4k-TuQ" id="Tf5-A9-ev0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CPa-Zc-bAk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1175" y="239"/>
+        </scene>
+        <!--Compose View Controller-->
+        <scene sceneID="eyn-bE-3bs">
+            <objects>
+                <viewController id="Edh-dg-3ji" customClass="ComposeViewController" customModule="twitter" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="yra-Gv-WPa"/>
+                        <viewControllerLayoutGuide type="bottom" id="Vom-rF-78R"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Lsi-8t-8Ll">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="b1E-D5-QP2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1595" y="239"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="6Kr-rk-iEW">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="sxQ-Wu-kx1" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bhr-Qs-sep">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BIz-rv-y1c" kind="relationship" relationship="rootViewController" id="oTe-eC-TxJ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KBV-xo-scQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="748" y="239"/>
+        </scene>
+    </scenes>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>
