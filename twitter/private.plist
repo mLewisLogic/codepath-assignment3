@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Twitter</key>
+	<dict>
+		<key>consumer_key</key>
+		<string>csOP0FxjS9yqc9EIRDLZGGJgO</string>
+		<key>consumer_secret</key>
+		<string>4tOcZsV2ulAuwKB0qbPmN6ueEaWz2TE31cH7pwPvbZsTXJfeU3</string>
+	</dict>
+</dict>
+</plist>
