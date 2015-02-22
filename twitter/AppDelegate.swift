@@ -12,10 +12,18 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-
+  var storyboard = UIStoryboard(name: "Main", bundle: nil)
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
     // Override point for customization after application launch.
+
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "userDidLogout", name: userDidLogoutNotification, object: nil)
+
+    if User.currentUser != nil {
+      var viewController = storyboard.instantiateViewControllerWithIdentifier("NavFeedViewController") as UIViewController
+      window?.rootViewController = viewController
+
+    }
     return true
   }
 
@@ -44,6 +52,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject?) -> Bool {
     TwitterClientManager.sharedClient?.openCallbackURL(url)
     return true
+  }
+
+  func userDidLogout() {
+    var viewController = storyboard.instantiateInitialViewController() as UIViewController
+    window?.rootViewController = viewController
   }
 
 }

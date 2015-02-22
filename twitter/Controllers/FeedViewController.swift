@@ -12,6 +12,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
   @IBOutlet weak var feedTableView: UITableView!
 
+  var refreshControl: UIRefreshControl!
+
+  var tweets: [Tweet]?
 
   let feedTweetCellNibName = "FeedTweetTableViewCell"
   let feedTweetCellIdentifier = "com.machel.twitter.feed.tweet"
@@ -32,8 +35,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // Set up automatic row height
     feedTableView.rowHeight = UITableViewAutomaticDimension
 
-    // Reload
-    feedTableView.reloadData()
+    // Set up pull to refresh
+    refreshControl = UIRefreshControl()
+    refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+    refreshControl.addTarget(self, action: "refresh", forControlEvents: UIControlEvents.ValueChanged)
+    feedTableView.addSubview(refreshControl)
+
+    // Load our data
+    refresh()
   }
 
   override func didReceiveMemoryWarning() {
@@ -43,11 +52,54 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 3
+    return tweets?.count ?? 0
   }
 
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     var cell = feedTableView.dequeueReusableCellWithIdentifier(feedTweetCellIdentifier) as FeedTweetTableViewCell
+    if tweets != nil {
+      cell.setTweet(tweets![indexPath.row])
+    }
+
     return cell
   }
+
+  func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    return 80
+  }
+
+  func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    performSegueWithIdentifier("tweetDetailSegue", sender: self)
+  }
+
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if segue.identifier == "tweetDetailSegue" {
+      var navController = segue.destinationViewController as UINavigationController
+      var controller = navController.childViewControllers[0] as TweetViewController
+      controller.setTweet(tweets![feedTableView.indexPathForSelectedRow()!.row])
+    }
+  }
+
+  func refresh() {
+    TwitterClientManager.sharedClient?.feedWithParams(
+      nil,
+      completion: {
+        (tweets, error) -> () in
+        if tweets != nil {
+          self.tweets = tweets
+          self.feedTableView.reloadData()
+        }
+
+        if error != nil {
+          println("Error loading feed: \(error?.description)")
+        }
+        self.refreshControl.endRefreshing()
+      }
+    )
+  }
+
+  @IBAction func onLogout(sender: AnyObject) {
+    User.logout()
+  }
+
 }

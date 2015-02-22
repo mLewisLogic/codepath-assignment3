@@ -47,18 +47,13 @@ class TwitterClientManager {
 
     return nil
   }
-
-
-
 }
 
 class TwitterClient: BDBOAuth1SessionManager {
-  typealias LoginCompletionHandlerType = (user: User?, error: NSError?) -> ()
-
-  var loginCompletionHandler: LoginCompletionHandlerType?
+  var loginCompletionHandler: ((user: User?, error: NSError?) -> ())?
 
   // Handle the entire OAuth dance
-  func loginWithCompletion(completion: LoginCompletionHandlerType) {
+  func loginWithCompletion(completion: (user: User?, error: NSError?) -> ()) {
     // Save the completion handler for later
     loginCompletionHandler = completion
 
@@ -90,27 +85,72 @@ class TwitterClient: BDBOAuth1SessionManager {
       success: { (access_token: BDBOAuth1Credential!) in
         println("Got access token: \(access_token.description)")
         self.requestSerializer.saveAccessToken(access_token)
-
-        // Load the user
-        self.GET(
-          "1.1/account/verify_credentials.json",
-          parameters: nil,
-          success: {
-            (task: NSURLSessionDataTask!, response: AnyObject!) in
-            var user = User(dict: response as NSDictionary)
+        self.userWithCompletion() {
+          (user: User?, error: NSError?) in
+          if let user = user {
             println("Got user: \(user.name)")
+            User.currentUser = user
             self.loginCompletionHandler?(user: user, error: nil)
-          },
-          failure: {
-            (task: NSURLSessionDataTask!, error: NSError!) in
+          } else {
             self.loginCompletionHandler?(user: nil, error: error)
-            () // Swift... sigh.
           }
-        )
+        }
       },
       failure: { (error: NSError!)in
         println("Error getting access token: \(error.description)")
         self.loginCompletionHandler?(user: nil, error: error)
+      }
+    )
+  }
+
+  // Load the user
+  func userWithCompletion(completion: (user: User?, error: NSError?) -> ()) {
+    GET(
+      "1.1/account/verify_credentials.json",
+      parameters: nil,
+      success: {
+        (task: NSURLSessionDataTask!, response: AnyObject!) in
+        var user = User(dict: response as NSDictionary)
+        completion(user: user, error: nil)
+      },
+      failure: {
+        (task: NSURLSessionDataTask!, error: NSError!) in
+        completion(user: nil, error: error)
+      }
+    )
+  }
+
+  // Load the feed
+  // Take in optional parameters
+  func feedWithParams(params: NSDictionary?, completion: (tweets: [Tweet]?, error: NSError?) -> ()) {
+    GET(
+      "1.1/statuses/home_timeline.json",
+      parameters: params,
+      success: {
+        (task: NSURLSessionDataTask!, response: AnyObject!) in
+        // Map the raw data to tweet objects
+        var tweets = (response as [NSDictionary]).map({item in Tweet(dict: item)})
+        completion(tweets: tweets, error: nil)
+      },
+      failure: {
+        (task: NSURLSessionDataTask!, error: NSError!) in
+        completion(tweets: nil, error: error)
+      }
+    )
+  }
+
+  // Tweet
+  func tweetWithCompletion(status: String, completion: (response: AnyObject?, error: NSError?) -> ()) {
+    POST(
+      "1.1/statuses/update.json",
+      parameters: nil,
+      success: {
+        (task: NSURLSessionDataTask!, response: AnyObject!) in
+        completion(response: response, error: nil)
+      },
+      failure: {
+        (task: NSURLSessionDataTask!, error: NSError!) in
+        completion(response: nil, error: error)
       }
     )
   }
