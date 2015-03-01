@@ -21,14 +21,30 @@ class User: NSObject {
   var name: String?
   var username: String?
   var profileImageUrl: String?
+  var backgroundImageUrl: String?
   var tagline: String?
+  var location: String?
+  var website: String?
+  var followingCount: Int?
+  var followersCount: Int?
 
   init(dict: NSDictionary) {
     self.dict = dict
     name = dict["name"] as String?
     username = dict["screen_name"] as String?
     profileImageUrl = dict["profile_image_url"] as String?
+    backgroundImageUrl = dict["profile_background_image_url"] as String?
     tagline = dict["description"] as String?
+    location = dict["location"] as String?
+    if let url = dict.objectForKey("url") as? String {
+      website = url
+    }
+    if let friends_count = dict.objectForKey("friends_count") as? Int {
+      followingCount = friends_count
+    }
+    if let following_count = dict.objectForKey("following_count") as? Int {
+      followingCount = following_count
+    }
   }
 
   class func logout() {

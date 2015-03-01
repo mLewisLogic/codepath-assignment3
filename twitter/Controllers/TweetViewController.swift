@@ -47,7 +47,7 @@ class TweetViewController: UIViewController {
   func loadTweetIntoView(tweet: Tweet) {
     if let author = tweet.author {
       if let profileImageUrl = author.profileImageUrl {
-        profileImageView.setImageWithURL(NSURL(string: profileImageUrl))
+        profileImageView.sd_setImageWithURL(NSURL(string: profileImageUrl))
       }
       if let name = author.name {
         userNameLabel.text = name

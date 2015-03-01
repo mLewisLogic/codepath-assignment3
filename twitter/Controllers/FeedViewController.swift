@@ -14,7 +14,12 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
   var refreshControl: UIRefreshControl!
 
+  var feedType: TwitterClient.FeedType!
+  var params: NSDictionary?
+
   var tweets: [Tweet]?
+
+  var userToSegueTo: User?
 
   let feedTweetCellNibName = "FeedTweetTableViewCell"
   let feedTweetCellIdentifier = "com.machel.twitter.feed.tweet"
@@ -41,8 +46,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     refreshControl.addTarget(self, action: "refresh", forControlEvents: UIControlEvents.ValueChanged)
     feedTableView.addSubview(refreshControl)
 
-    // Load our data
-    refresh()
+    // Default to a home view
+    self.feedType = .Home
   }
 
   override func didReceiveMemoryWarning() {
@@ -57,6 +62,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     var cell = feedTableView.dequeueReusableCellWithIdentifier(feedTweetCellIdentifier) as FeedTweetTableViewCell
+    cell.controllerDelegate = self
     if tweets != nil {
       cell.setTweet(tweets![indexPath.row])
     }
@@ -73,16 +79,34 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
   }
 
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    if segue.identifier == "tweetDetailSegue" {
-      var navController = segue.destinationViewController as UINavigationController
-      var controller = navController.childViewControllers[0] as TweetViewController
-      controller.setTweet(tweets![feedTableView.indexPathForSelectedRow()!.row])
+    if let identifier = segue.identifier {
+      switch identifier {
+      case "tweetDetailSegue":
+        var childController = segue.destinationViewController as TweetViewController
+        childController.setTweet(tweets![feedTableView.indexPathForSelectedRow()!.row])
+      case "profileViewSegue":
+        if userToSegueTo != nil {
+          var navController = segue.destinationViewController as UINavigationController
+          var profileController = navController.childViewControllers[0] as ProfileViewController
+          profileController.setUser(userToSegueTo)
+        }
+        userToSegueTo = nil
+      default:
+        break
+      }
     }
+  }
+
+  func setFeedType(type: TwitterClient.FeedType, params: NSDictionary?) {
+    self.feedType = type
+    self.params = params
+    self.refresh()
   }
 
   func refresh() {
     TwitterClientManager.sharedClient?.feedWithParams(
-      nil,
+      self.params,
+      feedType: self.feedType,
       completion: {
         (tweets, error) -> () in
         if tweets != nil {
@@ -98,8 +122,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     )
   }
 
-  @IBAction func onLogout(sender: AnyObject) {
-    User.logout()
+  func showUserProfile(user: User) {
+    userToSegueTo = user
+    performSegueWithIdentifier("profileViewSegue", sender: self)
   }
-
 }

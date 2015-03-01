@@ -30,10 +30,17 @@ class FeedTweetTableViewCell: UITableViewCell {
   @IBOutlet weak var favoriteButton: UIButton!
 
   var tweet: Tweet!
+  var controllerDelegate: FeedViewController!
   
   override func awakeFromNib() {
     super.awakeFromNib()
     // Initialization code
+    let recognizer = UITapGestureRecognizer(
+      target: self,
+      action:Selector("handleUserImageTapped:")
+    )
+    recognizer.delegate = self
+    profileImageView.addGestureRecognizer(recognizer)
   }
 
   override func setSelected(selected: Bool, animated: Bool) {
@@ -47,7 +54,14 @@ class FeedTweetTableViewCell: UITableViewCell {
     loadTweetIntoView(tweet)
   }
 
-  func loadTweetIntoView(tweet: Tweet) {
+  func handleUserImageTapped(sender: UITapGestureRecognizer) {
+    if let author = tweet.author {
+      controllerDelegate.showUserProfile(author)
+    }
+  }
+
+
+  private func loadTweetIntoView(tweet: Tweet) {
     if let retweeted = tweet.retweeted {
       if retweeted {
         retweetInfoView.frame.size.height = 20
@@ -60,7 +74,7 @@ class FeedTweetTableViewCell: UITableViewCell {
 
     if let author = tweet.author {
       if let profileImageUrl = author.profileImageUrl {
-        profileImageView.setImageWithURL(NSURL(string: profileImageUrl))
+        profileImageView.sd_setImageWithURL(NSURL(string: profileImageUrl))
       }
       if let name = author.name {
         userNameLabel.text = name

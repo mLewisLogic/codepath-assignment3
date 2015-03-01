@@ -50,6 +50,13 @@ class TwitterClientManager {
 }
 
 class TwitterClient: BDBOAuth1SessionManager {
+
+  enum FeedType {
+    case Profile
+    case Home
+    case Mentions
+  }
+
   var loginCompletionHandler: ((user: User?, error: NSError?) -> ())?
 
   // Handle the entire OAuth dance
@@ -122,9 +129,21 @@ class TwitterClient: BDBOAuth1SessionManager {
 
   // Load the feed
   // Take in optional parameters
-  func feedWithParams(params: NSDictionary?, completion: (tweets: [Tweet]?, error: NSError?) -> ()) {
+  func feedWithParams(params: NSDictionary?, feedType: FeedType, completion: (tweets: [Tweet]?, error: NSError?) -> ()) {
+    var url: String
+    switch feedType {
+    case .Profile:
+      url = "1.1/statuses/user_timeline.json"
+    case .Home:
+      url = "1.1/statuses/home_timeline.json"
+    case .Mentions:
+      url = "1.1/statuses/mentions_timeline.json"
+    }
+
+    println(url)
+    println(params)
     GET(
-      "1.1/statuses/home_timeline.json",
+      url,
       parameters: params,
       success: {
         (task: NSURLSessionDataTask!, response: AnyObject!) in
